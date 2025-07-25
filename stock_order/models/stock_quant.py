@@ -196,7 +196,7 @@ class StockQuant(models.Model):
         try:
             api_url = f"https://push-api-uat.bdladvantage.com/v2/StockOrder/{principal_code}/{customer_reference}"
             headers = {
-                "Authorization": "bad06b49-4883-4d9d-919c-8e1a1c59dd16",
+                "Authorization": "ask for the api key",
                 "Content-Type": "application/json"
             }
 
