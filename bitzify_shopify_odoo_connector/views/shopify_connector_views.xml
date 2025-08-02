@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Shopify Connector Tree View -->
+    <record id="view_shopify_connector_tree" model="ir.ui.view">
+        <field name="name">bitzify.shopify.connector.tree</field>
+        <field name="model">bitzify.shopify.connector</field>
+        <field name="arch" type="xml">
+            <tree string="Shopify Connectors">
+                <field name="name"/>
+                <field name="shopify_store_url"/>
+                <field name="is_active"/>
+                <field name="last_order_import"/>
+                <field name="total_orders_imported"/>
+                <field name="last_sync_status" decoration-success="last_sync_status == 'success'" 
+                       decoration-danger="last_sync_status == 'error'" decoration-warning="last_sync_status == 'pending'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Shopify Connector Form View -->
+    <record id="view_shopify_connector_form" model="ir.ui.view">
+        <field name="name">bitzify.shopify.connector.form</field>
+        <field name="model">bitzify.shopify.connector</field>
+        <field name="arch" type="xml">
+            <form string="Shopify Connector">
+                <header>
+                    <button name="test_connection" string="Test Connection" type="object" class="btn-primary"/>
+                    <button name="import_orders_manual" string="Import Orders Now" type="object" class="btn-secondary"/>
+                    <field name="is_active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_orders" icon="fa-shopping-cart">
+                            <field string="Orders" name="total_orders_imported" widget="statinfo"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Connector Name"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group name="connection" string="Connection Settings">
+                            <field name="shopify_store_url" placeholder="mystore.myshopify.com"/>
+                            <field name="api_access_token" password="True"/>
+                            <field name="webhook_secret" password="True"/>
+                            <field name="api_version"/>
+                        </group>
+                        <group name="sync_info" string="Sync Information">
+                            <field name="last_order_import"/>
+                            <field name="last_sync_status" 
+                                   decoration-success="last_sync_status == 'success'" 
+                                   decoration-danger="last_sync_status == 'error'" 
+                                   decoration-warning="last_sync_status == 'pending'"/>
+                            <field name="last_sync_message" attrs="{'invisible': [('last_sync_message', '=', False)]}"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page name="import_settings" string="Import Settings">
+                            <group>
+                                <group name="auto_import" string="Automatic Import">
+                                    <field name="auto_import_orders"/>
+                                    <field name="import_interval_minutes" attrs="{'invisible': [('auto_import_orders', '=', False)]}"/>
+                                    <field name="import_from_date"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page name="processing_settings" string="Processing Settings">
+                            <group>
+                                <group name="order_processing" string="Order Processing">
+                                    <field name="auto_confirm_paid_orders"/>
+                                    <field name="create_customers"/>
+                                    <field name="default_product_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page name="webhook_info" string="Webhook Configuration">
+                            <div class="alert alert-info">
+                                <strong>Webhook Setup Instructions:</strong>
+                                <p>To receive real-time order updates from Shopify, configure webhooks in your Shopify admin:</p>
+                                <ol>
+                                    <li>Go to Settings → Notifications in your Shopify admin</li>
+                                    <li>Scroll down to "Webhooks" section</li>
+                                    <li>Click "Create webhook"</li>
+                                    <li>Use this URL: <code id="webhook_url">/bitzify/shopify/webhook</code></li>
+                                    <li>Select JSON format</li>
+                                    <li>Choose these events: orders/create, orders/updated, orders/paid, orders/cancelled</li>
+                                </ol>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Shopify Connector Actions -->
+    <record id="action_shopify_connector" model="ir.actions.act_window">
+        <field name="name">Shopify Connectors</field>
+        <field name="res_model">bitzify.shopify.connector</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Shopify connector!
+            </p>
+            <p>
+                Connect your Shopify store to automatically import order data into Odoo.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Demo/Example Default Product for Shopify Orders -->
+    <record id="product_shopify_default" model="product.product">
+        <field name="name">Shopify Product (Default)</field>
+        <field name="default_code">SHOPIFY-DEFAULT</field>
+        <field name="type">product</field>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="list_price">0.00</field>
+        <field name="categ_id" ref="product.product_category_1"/>
+    </record>
+
+    <!-- Shipping Product -->
+    <record id="product_shopify_shipping" model="product.product">
+        <field name="name">Shipping</field>
+        <field name="default_code">SHIPPING</field>
+        <field name="type">service</field>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="list_price">0.00</field>
+        <field name="categ_id" ref="product.product_category_5"/>
+    </record>
+</odoo>

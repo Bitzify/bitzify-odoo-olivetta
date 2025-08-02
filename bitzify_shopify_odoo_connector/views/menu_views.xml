@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_bitzify_shopify_root" 
+              name="Bitzify Shopify" 
+              web_icon="bitzify_shopify_odoo_connector,static/description/icon.png" 
+              sequence="85"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_bitzify_shopify_config" 
+              name="Configuration" 
+              parent="menu_bitzify_shopify_root" 
+              sequence="10"/>
+
+    <!-- Connector Configuration -->
+    <menuitem id="menu_bitzify_shopify_connectors" 
+              name="Shopify Connectors" 
+              parent="menu_bitzify_shopify_config" 
+              action="action_shopify_connector" 
+              sequence="10"/>
+
+    <!-- Quick Setup Wizard -->
+    <menuitem id="menu_bitzify_shopify_setup" 
+              name="Quick Setup" 
+              parent="menu_bitzify_shopify_config" 
+              action="action_shopify_config_wizard" 
+              sequence="5"/>
+
+    <!-- Orders Menu -->
+    <menuitem id="menu_bitzify_shopify_orders" 
+              name="Orders" 
+              parent="menu_bitzify_shopify_root" 
+              sequence="20"/>
+
+    <!-- Shopify Orders -->
+    <menuitem id="menu_bitzify_shopify_orders_list" 
+              name="Shopify Orders" 
+              parent="menu_bitzify_shopify_orders" 
+              action="action_shopify_orders" 
+              sequence="10"/>
+
+    <!-- All Sales Orders (with Shopify filter) -->
+    <menuitem id="menu_bitzify_shopify_all_orders" 
+              name="All Orders" 
+              parent="menu_bitzify_shopify_orders" 
+              action="sale.action_orders" 
+              sequence="20"/>
+</odoo>

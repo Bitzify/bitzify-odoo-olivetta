@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bitzify_shopify_connector_user,bitzify.shopify.connector.user,model_bitzify_shopify_connector,base.group_user,1,0,0,0
+access_bitzify_shopify_connector_manager,bitzify.shopify.connector.manager,model_bitzify_shopify_connector,sales_team.group_sale_manager,1,1,1,1
+access_bitzify_shopify_config_wizard_user,bitzify.shopify.config.wizard.user,model_bitzify_shopify_config_wizard,base.group_user,1,1,1,1

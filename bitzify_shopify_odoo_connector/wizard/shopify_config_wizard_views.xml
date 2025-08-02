@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Shopify Configuration Wizard Form -->
+    <record id="view_shopify_config_wizard_form" model="ir.ui.view">
+        <field name="name">bitzify.shopify.config.wizard.form</field>
+        <field name="model">bitzify.shopify.config.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Shopify Configuration Wizard">
+                <sheet>
+                    <!-- Progress indicator -->
+                    <div class="o_form_sheet_bg">
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: 25%" attrs="{'style': 'width: 25%' if step == 'basic' else 'width: 50%' if step == 'import' else 'width: 75%' if step == 'processing' else 'width: 100%'}">
+                                Step <field name="step" invisible="1"/>
+                                <span attrs="{'invisible': [('step', '!=', 'basic')]}">1</span>
+                                <span attrs="{'invisible': [('step', '!=', 'import')]}">2</span>
+                                <span attrs="{'invisible': [('step', '!=', 'processing')]}">3</span>
+                                <span attrs="{'invisible': [('step', '!=', 'summary')]}">4</span>
+                                of 4
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Basic Configuration -->
+                    <div attrs="{'invisible': [('step', '!=', 'basic')]}">
+                        <div class="oe_title">
+                            <h1>Step 1: Basic Configuration</h1>
+                            <h2>Connect to your Shopify store</h2>
+                        </div>
+                        
+                        <group>
+                            <group name="basic_config" string="Store Connection">
+                                <field name="name" placeholder="My Shopify Store"/>
+                                <field name="shopify_store_url" placeholder="mystore.myshopify.com"/>
+                                <field name="api_access_token" password="True"/>
+                                <field name="webhook_secret" password="True"/>
+                            </group>
+                        </group>
+                        
+                        <div class="alert alert-info">
+                            <strong>How to get your API credentials:</strong>
+                            <ol>
+                                <li>Go to your Shopify Admin → Apps and sales channels</li> 
+                                <li>Click "Develop apps" → "Create an app"</li>
+                                <li>Configure Admin API access scopes: read_orders, write_orders, read_customers, write_customers</li>
+                                <li>Install the app and copy the Admin API access token</li>
+                            </ol>
+                        </div>
+                        
+                        <!-- Connection Test Results -->
+                        <div attrs="{'invisible': [('connection_test_result', '=', False)]}">
+                            <div class="alert alert-success" attrs="{'invisible': [('connection_test_success', '=', False)]}">
+                                <strong>✓ Connection Successful!</strong>
+                                <pre><field name="connection_test_result"/></pre>
+                            </div>
+                            <div class="alert alert-danger" attrs="{'invisible': [('connection_test_success', '=', True)]}">
+                                <strong>✗ Connection Failed</strong>
+                                <p><field name="connection_test_result"/></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Import Settings -->
+                    <div attrs="{'invisible': [('step', '!=', 'import')]}">
+                        <div class="oe_title">
+                            <h1>Step 2: Import Settings</h1>
+                            <h2>Configure how orders are imported</h2>
+                        </div>
+                        
+                        <group>
+                            <group name="import_config" string="Order Import">
+                                <field name="auto_import_orders"/>
+                                <field name="import_interval_minutes" attrs="{'invisible': [('auto_import_orders', '=', False)]}"/>
+                                <field name="import_from_date"/>
+                            </group>
+                        </group>
+                        
+                        <div class="alert alert-info">
+                            <p><strong>Import Options:</strong></p>
+                            <ul>
+                                <li><strong>Auto Import:</strong> Automatically sync orders at regular intervals</li>
+                                <li><strong>Import From Date:</strong> Only import orders created after this date (leave empty to import all)</li>
+                                <li><strong>Webhooks:</strong> For real-time updates, configure webhooks in the final step</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Processing Settings -->
+                    <div attrs="{'invisible': [('step', '!=', 'processing')]}">
+                        <div class="oe_title">
+                            <h1>Step 3: Processing Settings</h1>
+                            <h2>Configure how orders are processed</h2>
+                        </div>
+                        
+                        <group>
+                            <group name="processing_config" string="Order Processing">
+                                <field name="auto_confirm_paid_orders"/>
+                                <field name="create_customers"/>
+                                <field name="default_product_id" domain="[('sale_ok', '=', True)]"/>
+                            </group>
+                        </group>
+                        
+                        <div class="alert alert-info">
+                            <p><strong>Processing Options:</strong></p>
+                            <ul>
+                                <li><strong>Auto Confirm Paid Orders:</strong> Automatically confirm orders that are already paid in Shopify</li>
+                                <li><strong>Create Customers:</strong> Automatically create customer records for new Shopify customers</li>
+                                <li><strong>Default Product:</strong> Product to use when Shopify products are not found in Odoo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Summary -->
+                    <div attrs="{'invisible': [('step', '!=', 'summary')]}">
+                        <div class="oe_title">
+                            <h1>Step 4: Summary &amp; Finish</h1>
+                            <h2>Review your configuration</h2>
+                        </div>
+                        
+                        <group>
+                            <group name="summary_basic" string="Store Connection">
+                                <label for="name" string="Configuration Name"/>
+                                <div><field name="name" readonly="1" nolabel="1"/></div>
+                                <label for="shopify_store_url" string="Store URL"/>
+                                <div><field name="shopify_store_url" readonly="1" nolabel="1"/></div>
+                            </group>
+                            <group name="summary_settings" string="Settings">
+                                <label for="auto_import_orders" string="Auto Import"/>
+                                <div><field name="auto_import_orders" readonly="1" nolabel="1"/></div>
+                                <label for="auto_confirm_paid_orders" string="Auto Confirm Paid"/>
+                                <div><field name="auto_confirm_paid_orders" readonly="1" nolabel="1"/></div>
+                                <label for="create_customers" string="Create Customers"/>
+                                <div><field name="create_customers" readonly="1" nolabel="1"/></div>
+                            </group>
+                        </group>
+                        
+                        <div class="alert alert-warning">
+                            <strong>Next Steps After Setup:</strong>
+                            <ol>
+                                <li>Configure webhooks in your Shopify admin for real-time updates</li>
+                                <li>Test the connection by importing some orders</li>
+                                <li>Set up product mapping if needed</li>
+                            </ol>
+                        </div>
+                    </div>
+                </sheet>
+                
+                <footer>
+                    <button string="Test Connection" name="action_test_connection" type="object" 
+                            class="btn-secondary" attrs="{'invisible': [('step', '!=', 'basic')]}"/>
+                    
+                    <button string="Previous" name="action_previous_step" type="object" 
+                            class="btn-secondary" attrs="{'invisible': [('step', '=', 'basic')]}"/>
+                    
+                    <button string="Next" name="action_next_step" type="object" 
+                            class="btn-primary" attrs="{'invisible': [('step', '=', 'summary')]}"/>
+                    
+                    <button string="Create Connector" name="action_create_connector" type="object" 
+                            class="btn-primary" attrs="{'invisible': [('step', '!=', 'summary')]}"/>
+                    
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Shopify Configuration Wizard Action -->
+    <record id="action_shopify_config_wizard" model="ir.actions.act_window">
+        <field name="name">Shopify Setup Wizard</field>
+        <field name="res_model">bitzify.shopify.config.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Set up your Shopify connection!
+            </p>
+            <p>
+                This wizard will guide you through connecting your Shopify store to Odoo.
+            </p>
+        </field>
+    </record>
+</odoo>

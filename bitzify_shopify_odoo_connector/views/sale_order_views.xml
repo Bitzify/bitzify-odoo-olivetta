@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extended Sale Order Tree View -->
+    <record id="view_order_tree_inherit_shopify" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.shopify</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="is_shopify_order" invisible="1"/>
+                <field name="shopify_order_number" optional="hide" attrs="{'invisible': [('is_shopify_order', '=', False)]}"/>
+                <field name="shopify_financial_status" optional="hide" attrs="{'invisible': [('is_shopify_order', '=', False)]}"
+                       decoration-success="shopify_financial_status == 'paid'" 
+                       decoration-warning="shopify_financial_status in ['pending', 'authorized']"
+                       decoration-danger="shopify_financial_status in ['refunded', 'voided']"/>
+                <field name="shopify_fulfillment_status" optional="hide" attrs="{'invisible': [('is_shopify_order', '=', False)]}"
+                       decoration-success="shopify_fulfillment_status == 'fulfilled'" 
+                       decoration-warning="shopify_fulfillment_status == 'partial'"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Extended Sale Order Form View -->
+    <record id="view_order_form_inherit_shopify" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.shopify</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button class="oe_stat_button" type="object" name="action_view_in_shopify" 
+                        icon="fa-external-link" attrs="{'invisible': [('is_shopify_order', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">View in</span>
+                        <span class="o_stat_text">Shopify</span>
+                    </div>
+                </button>
+            </xpath>
+            
+            <field name="partner_id" position="after">
+                <field name="is_shopify_order" invisible="1"/>
+                <field name="shopify_order_id" attrs="{'invisible': [('is_shopify_order', '=', False)]}" readonly="1"/>
+                <field name="shopify_order_number" attrs="{'invisible': [('is_shopify_order', '=', False)]}" readonly="1"/>
+            </field>
+            
+            <field name="date_order" position="after">
+                <field name="shopify_financial_status" attrs="{'invisible': [('is_shopify_order', '=', False)]}" readonly="1"
+                       decoration-success="shopify_financial_status == 'paid'" 
+                       decoration-warning="shopify_financial_status in ['pending', 'authorized']"
+                       decoration-danger="shopify_financial_status in ['refunded', 'voided']"/>
+                <field name="shopify_fulfillment_status" attrs="{'invisible': [('is_shopify_order', '=', False)]}" readonly="1"
+                       decoration-success="shopify_fulfillment_status == 'fulfilled'" 
+                       decoration-warning="shopify_fulfillment_status == 'partial'"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Shopify Orders Action -->
+    <record id="action_shopify_orders" model="ir.actions.act_window">
+        <field name="name">Shopify Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_shopify_order', '=', True)]</field>
+        <field name="context">{'search_default_is_shopify_order': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Shopify orders found!
+            </p>
+            <p>
+                Orders imported from Shopify will appear here.
+                Make sure your Shopify connector is configured and active.
+            </p>
+        </field>
+    </record>
+
+    <!-- Sale Order Line Form View Extension -->
+    <record id="view_order_line_form_inherit_shopify" model="ir.ui.view">
+        <field name="name">sale.order.line.form.inherit.shopify</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_form"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="shopify_line_item_id" readonly="1" attrs="{'invisible': [('shopify_line_item_id', '=', False)]}"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Search View for Shopify Orders -->
+    <record id="view_sales_order_filter_inherit_shopify" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.shopify</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <filter name="my_sale_orders_filter" position="after">
+                <separator/>
+                <filter string="Shopify Orders" name="shopify_orders" domain="[('is_shopify_order', '=', True)]"/>
+                <filter string="Paid Orders" name="paid_orders" domain="[('shopify_financial_status', '=', 'paid')]"/>
+                <filter string="Pending Payment" name="pending_payment" domain="[('shopify_financial_status', 'in', ['pending', 'authorized'])]"/>
+                <separator/>
+                <filter string="Fulfilled" name="fulfilled" domain="[('shopify_fulfillment_status', '=', 'fulfilled')]"/>
+                <filter string="Unfulfilled" name="unfulfilled" domain="[('shopify_fulfillment_status', 'in', ['null', 'partial'])]"/>
+            </filter>
+            
+            <field name="partner_id" position="after">
+                <field name="shopify_order_number"/>
+                <field name="shopify_order_id"/>
+            </field>
+            
+            <group position="inside">
+                <filter string="Financial Status" name="group_financial_status" context="{'group_by': 'shopify_financial_status'}"/>
+                <filter string="Fulfillment Status" name="group_fulfillment_status" context="{'group_by': 'shopify_fulfillment_status'}"/>
+            </group>
+        </field>
+    </record>
+</odoo>
